@@ -1,4 +1,5 @@
-import type { ChannelType, Client, User } from "@buape/carbon";
+import type { DiscordSenderIdentity } from "./sender-identity.js";
+export type { DiscordSenderIdentity };
 import type { HistoryEntry } from "../../auto-reply/reply/history.js";
 import type { ReplyToMode } from "../../config/config.js";
 import type { resolveAgentRoute } from "../../routing/resolve-route.js";
