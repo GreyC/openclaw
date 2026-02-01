@@ -34,7 +34,6 @@ ENV NODE_ENV=production
 # Security hardening: Run as non-root user
 # The node:22-bookworm image includes a 'node' user (uid 1000)
 # This reduces the attack surface by preventing container escape via root privileges
-RUN apt-get update && apt-get install -y curl && curl -fsSL https://tailscale.com/install.sh | sh && curl -L code.kimi.com/install.sh | bash
 USER node
 
 CMD ["node", "dist/index.js"]
