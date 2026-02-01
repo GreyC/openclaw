@@ -1,5 +1,5 @@
 import type { ChannelType, Client, User } from "discord.js";
-import type { DiscordSenderIdentity } from "./sender-identity.js";
+export type { DiscordSenderIdentity } from "./sender-identity.js";
 
 export type { DiscordSenderIdentity };
 
