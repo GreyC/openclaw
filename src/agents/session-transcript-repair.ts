@@ -34,9 +34,12 @@ function extractToolCallsFromAssistant(
     }
 
     if (rec.type === "toolCall" || rec.type === "toolUse" || rec.type === "functionCall") {
+      if (typeof rec.name !== "string" || !rec.name) {
+        continue;
+      }
       toolCalls.push({
         id: rec.id,
-        name: typeof rec.name === "string" ? rec.name : undefined,
+        name: rec.name,
       });
     }
   }
@@ -49,6 +52,11 @@ function isToolCallBlock(block: unknown): block is ToolCallBlock {
   }
   const type = (block as { type?: unknown }).type;
   return typeof type === "string" && TOOL_CALL_TYPES.has(type);
+}
+
+function isValidToolCallBlock(block: ToolCallBlock): boolean {
+  const b = block as { id?: unknown; name?: unknown };
+  return typeof b.id === "string" && !!b.id && typeof b.name === "string" && !!b.name;
 }
 
 function hasToolCallInput(block: ToolCallBlock): boolean {
@@ -77,7 +85,7 @@ function makeMissingToolResult(params: {
   return {
     role: "toolResult",
     toolCallId: params.toolCallId,
-    toolName: params.toolName ?? "unknown",
+    toolName: params.toolName || "unknown",
     content: [
       {
         type: "text",
@@ -118,11 +126,13 @@ export function repairToolCallInputs(messages: AgentMessage[]): ToolCallInputRep
     let droppedInMessage = 0;
 
     for (const block of msg.content) {
-      if (isToolCallBlock(block) && !hasToolCallInput(block)) {
-        droppedToolCalls += 1;
-        droppedInMessage += 1;
-        changed = true;
-        continue;
+      if (isToolCallBlock(block)) {
+        if (!hasToolCallInput(block) || !isValidToolCallBlock(block)) {
+          droppedToolCalls += 1;
+          droppedInMessage += 1;
+          changed = true;
+          continue;
+        }
       }
       nextContent.push(block);
     }
